@@ -117,8 +117,8 @@ function main()
     @show maxrelerr_tpz
 end
 
-pyplot() # Need PyPlot to get the colorbar labels right, otherwise GR is fine
-# gr()
+# pyplot() # Need PyPlot to get the colorbar labels right, otherwise GR is fine
+gr()
 #plot_font = "Computer Modern"
 default(
     #fontfamily=plot_font, 
