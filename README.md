@@ -1,6 +1,6 @@
 # TrapzSSQ: Singularity swap quadrature for the trapezoidal rule
 
-This repository accompanies the paper "Singularity swap quadrature for nearly singular line integrals on closed curves in two dimensions" by L. af Klinteberg (arXiv).
+This repository accompanies the paper ["Singularity swap quadrature for nearly singular line integrals on closed curves in two dimensions" by L. af Klinteberg, arXiv:2304.11865 [math.NA]](https://arxiv.org/abs/2304.11865).
 
 The code is a Julia implementation of the quadrature method introduced in the paper. All plots reported in the paper can be generated using the scripts in `scripts/`.
 
