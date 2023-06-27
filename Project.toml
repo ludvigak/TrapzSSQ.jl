@@ -1,6 +1,6 @@
 name = "TrapzSSQ"
 uuid = "aa75664a-a41c-4372-bbf4-b55f3dfe52bf"
-authors = ["Ludvig af Klinteberg <ludvig.af.klinteberg@scania.com>"]
+authors = ["Ludvig af Klinteberg <ludvig.af.klinteberg@mdu.se>"]
 version = "0.1.0"
 
 [deps]
