@@ -3,6 +3,7 @@ module TrapzSSQ
 using Printf
 
 include("fourier.jl")
+include("weights.jl")
 
 function find_root(z0, gamma_vec, t_vec, expansion::FourierSeries)
     minidx = argmin(@. abs(gamma_vec-z0))

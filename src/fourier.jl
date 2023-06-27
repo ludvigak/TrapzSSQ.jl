@@ -34,6 +34,18 @@ function get_k_vec(M,L)
     return k
 end
 
+"Minimum and maximum wavenumbers of FFT of length N"
+function k_range(N)
+    if mod(N,2)==0
+        Kmin = -N/2
+        Kmax = N/2-1
+    else
+        Kmin = -(N-1)/2
+        Kmax = (N-1)/2
+    end
+    return Kmin, Kmax
+end
+
 function eval_expansion(expansion::FourierSeries, t)
     return eval_expansion(expansion.coeffs, expansion.k, t)
 end
