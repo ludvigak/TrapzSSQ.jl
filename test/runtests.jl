@@ -6,6 +6,7 @@ using QuadGK
     include("test_pow.jl")
     include("test_log.jl")
     include("test_weights.jl")
+    include("test_interface.jl")
     include("test_starfish.jl")
 end
 ;

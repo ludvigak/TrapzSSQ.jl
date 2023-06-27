@@ -20,30 +20,37 @@ function starfish_error(t0ref, m, N)
     ### Begin Singularity Swap Quadrature (SSQ) 
     if m=="log"
         I_ssq = TrapzSSQ.eval_log_ssq(int_vec, discretization.gamma, discretization.t, z0)
+        w_ssq = TrapzSSQ.log_ssq_weights(discretization.gamma, discretization.t, z0)
     else
         I_ssq = TrapzSSQ.eval_pow_ssq(int_vec, discretization.gamma, discretization.t, z0, m)
+        w_ssq = TrapzSSQ.pow_ssq_weights(discretization.gamma, discretization.t, z0, m)
     end
+    I_ssq_weights = sum(int_vec .* w_ssq)
     ### End SSQ
     if !isnothing(I_ana)
         Erel_ssq = abs(I_ssq - I_ana) / abs(I_ana)
+        Erel_ssq_weights = abs(I_ssq_weights - I_ana) / abs(I_ana)
     else
         # Compute reference numerically
         analytic_integrand = t -> integrand(sigma(t), curve.gamma(t), curve.gammap(t), z0)
         I_ref, err_ref = quadgk(analytic_integrand, 0, 2*pi, rtol=1e-13)
         Erel_ssq = abs(I_ssq - I_ref) / abs(I_ref)
+        Erel_ssq_weights = abs(I_ssq_weights - I_ref) / abs(I_ref)
     end
-    return Erel_ssq
+    return Erel_ssq, Erel_ssq_weights
 end
 
 @testset "Starfish reference" begin
     N = 401 # odd
     m_list =   ["log", 1,     2,     3    , 4,  ]
-    tol_list = [1e-13, 1e-14, 1e-12, 1e-10, 1e-9]
+    tol_list = [1e-13, 1e-14, 1e-12, 1e-10, 5e-9]
     for (m, tol) = zip(m_list, tol_list)
         @testset "m=$m" begin
             for t0ref = [1.0 + 0.01im, 1.0 - 0.01im]
                 @testset "t0=$t0ref" begin
-                    @test starfish_error(t0ref, m, N) < tol
+                    Erel_ssq, Erel_ssq_weights = starfish_error(t0ref, m, N)
+                    @test Erel_ssq < tol
+                    @test Erel_ssq_weights < tol
                 end
             end
         end

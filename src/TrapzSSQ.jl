@@ -29,11 +29,10 @@ function eval_log_ssq(integrand_vec::Vector{<:Real}, gamma_vec::Vector, t_vec::V
     # Note that integrand must be real
     N = length(gamma_vec)
     h = 2*pi/N
-    gamma_hat = FourierSeries(gamma_vec)
     t0 = find_root(z0, gamma_vec, t_vec, gamma_hat)
     if abs(imag(t0)) > threshold
         # Return trapezoidal sum
-        return sum(integrand_vec)*2*pi/N
+        return h * sum(integrand_vec)
     end
     log_vec = @. log(abs(gamma_vec-z0))
     mapped_log_vec = @. log(abs(exp(1im*t_vec) - exp(1im*t0)))
@@ -43,6 +42,35 @@ function eval_log_ssq(integrand_vec::Vector{<:Real}, gamma_vec::Vector, t_vec::V
     q_vec = TrapzSSQ.complex_log_integrals(t0, f_hat.k)
     I_ssq = h * sum(rem_vec) + real(sum( q_vec .* f_hat.coeffs ))
     return I_ssq
+end
+
+function pow_ssq_weights(gamma_vec::Vector, t_vec::Vector, z0::Complex, m::Integer;
+                         gamma_hat=FourierSeries(gamma_vec), threshold=Inf)
+    t0 = find_root(z0, gamma_vec, t_vec, gamma_hat)
+    N = length(gamma_vec)
+    if abs(imag(t0)) > threshold
+        # Return trapezoidal sum
+        return 2*pi/N * ones(N)
+    end
+    w_vec = complex_pow_weights(t0, m, N)
+    ssq_weights = @. w_vec * (exp(1im*t_vec) - exp(1im*t0))^m
+    return ssq_weights
+end
+
+function log_ssq_weights(gamma_vec::Vector, t_vec::Vector, z0::Complex;
+                         gamma_hat=FourierSeries(gamma_vec), threshold=Inf)
+    N = length(gamma_vec)
+    h = 2*pi/N
+    t0 = find_root(z0, gamma_vec, t_vec, gamma_hat)
+    if abs(imag(t0)) > threshold
+        # Return trapezoidal rule weights
+        return h * ones(N)
+    end
+    inv_log_vec = @. 1 / log(abs(gamma_vec-z0))
+    mapped_log_vec = @. log(abs(exp(1im*t_vec) - exp(1im*t0)))
+    w_vec = real(fft( TrapzSSQ.complex_log_integrals(t0, gamma_hat.k) ))/N
+    ssq_weights = @. h*(1 - mapped_log_vec*inv_log_vec) + w_vec*inv_log_vec
+    return ssq_weights
 end
 
 function complex_pow_integrals(t0, m, klist)
